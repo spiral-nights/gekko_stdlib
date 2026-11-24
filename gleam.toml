@@ -1,0 +1,11 @@
+name = "gekko_stdlib"
+version = "0.1.0"
+description = "MoonBit/gekko companion shim overlay for upstream gleam_stdlib"
+licences = ["MIT"]
+repository = { type = "github", user = "spiral-nights", repo = "gekko_stdlib" }
+
+[dependencies]
+gleam_stdlib = ">= 1.0.0 and < 2.0.0"
+
+[dev-dependencies]
+gleeunit = ">= 1.2.0 and < 2.0.0"
