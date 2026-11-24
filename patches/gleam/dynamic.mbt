@@ -1,5 +1,9 @@
 ///|
 #gekko.patch
+pub type Dynamic = @gprelude.Dynamic
+
+///|
+#gekko.patch
 pub fn classify(data : @gprelude.Dynamic) -> String {
   match data {
     @gprelude.DynNull => "Nil"

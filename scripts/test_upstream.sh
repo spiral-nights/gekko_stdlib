@@ -167,13 +167,33 @@ EOF
 
 cat >> "$PROJECT_DIR/gleam.toml" <<'EOF'
 
-[tools.gekko.overrides."stdlib_parity:test/decode_test.make_object"]
-package = "decode_test_ffi"
-function = "make_map"
+[tools.gekko.shims]
+gleam_stdlib = "gekko_stdlib"
+EOF
 
-[tools.gekko.overrides."stdlib_parity:test/decode_test.make_map"]
-package = "decode_test_ffi"
-function = "make_map"
+mkdir -p "$PROJECT_DIR/patches/test/decode_test"
+cat > "$PROJECT_DIR/patches/test/decode_test/moon.pkg" <<'EOF'
+import {
+  "decode_test_ffi",
+}
+EOF
+
+cat > "$PROJECT_DIR/patches/test/decode_test/decode_test.mbt" <<'EOF'
+///|
+#gekko.patch
+fn[T : @gprelude.ToDynamic] make_object(
+  items : @gprelude.GList[(String, T)],
+) -> @gprelude.Dynamic {
+  @decode_test_ffi.make_map(items)
+}
+
+///|
+#gekko.patch
+fn[T : @gprelude.ToDynamic] make_map(
+  items : @gprelude.GList[(String, T)],
+) -> @gprelude.Dynamic {
+  @decode_test_ffi.make_map(items)
+}
 EOF
 
 echo "=== Staging dependencies and transpiling stdlib_parity ==="
