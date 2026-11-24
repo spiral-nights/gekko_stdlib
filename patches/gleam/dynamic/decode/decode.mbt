@@ -9,6 +9,7 @@ fn[T] __patch_reverse_glist(xs : @gprelude.GList[T]) -> @gprelude.GList[T] {
 }
 
 ///|
+#gekko.patch
 fn[K : @gprelude.ToDynamic] lookup_field(
   data : @gprelude.Dynamic,
   key : K,
@@ -49,6 +50,7 @@ fn[K : @gprelude.ToDynamic] lookup_field(
 }
 
 ///|
+#gekko.patch
 fn[K : @gprelude.ToDynamic] key_to_string(key : K) -> String {
   match @gprelude.ToDynamic::to_dynamic(key) {
     @gprelude.DynString(s) => s
@@ -59,6 +61,7 @@ fn[K : @gprelude.ToDynamic] key_to_string(key : K) -> String {
 }
 
 ///|
+#gekko.patch
 fn decode_string(
   data : @gprelude.Dynamic,
 ) -> (String, @gprelude.GList[DecodeError]) {
@@ -69,6 +72,7 @@ fn decode_string(
 }
 
 ///|
+#gekko.patch
 fn decode_bool(
   data : @gprelude.Dynamic,
 ) -> (Bool, @gprelude.GList[DecodeError]) {
@@ -79,6 +83,7 @@ fn decode_bool(
 }
 
 ///|
+#gekko.patch
 fn decode_int(
   data : @gprelude.Dynamic,
 ) -> (Int64, @gprelude.GList[DecodeError]) {
@@ -89,6 +94,7 @@ fn decode_int(
 }
 
 ///|
+#gekko.patch
 fn decode_float(
   data : @gprelude.Dynamic,
 ) -> (Double, @gprelude.GList[DecodeError]) {
@@ -99,6 +105,7 @@ fn decode_float(
 }
 
 ///|
+#gekko.patch
 fn decode_bit_array(
   data : @gprelude.Dynamic,
 ) -> (@gprelude.BitArray, @gprelude.GList[DecodeError]) {
@@ -109,6 +116,7 @@ fn decode_bit_array(
 }
 
 ///|
+#gekko.patch
 pub fn[A] list(inner : Decoder[A]) -> Decoder[@gprelude.GList[A]] {
   Decoder(function=fn(data) {
     let elements_res = match data {
@@ -135,6 +143,7 @@ pub fn[A] list(inner : Decoder[A]) -> Decoder[@gprelude.GList[A]] {
 }
 
 ///|
+#gekko.patch
 fn[K, V] decode_dict(
   data : @gprelude.Dynamic,
   decode_entry : (
@@ -162,6 +171,7 @@ fn[K, V] decode_dict(
 }
 
 ///|
+#gekko.patch
 fn is_null(a : @gprelude.Dynamic) -> Bool {
   match a {
     @gprelude.DynNull => true

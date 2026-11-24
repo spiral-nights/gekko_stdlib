@@ -1,9 +1,11 @@
 ///|
+#gekko.patch
 pub fn parse(s : String) -> Result[Int64, Unit] {
   do_base_parse(s, 10L)
 }
 
 ///|
+#gekko.patch
 fn do_base_parse(s : String, base : Int64) -> Result[Int64, Unit] {
   if base < 2L || base > 36L || s == "" {
     return Err(())
@@ -42,11 +44,13 @@ fn do_base_parse(s : String, base : Int64) -> Result[Int64, Unit] {
 }
 
 ///|
+#gekko.patch
 pub fn to_string(x : Int64) -> String {
   x.to_string()
 }
 
 ///|
+#gekko.patch
 fn do_to_base_string(x : Int64, base : Int64) -> String {
   if base < 2L || base > 36L {
     return ""
@@ -77,31 +81,37 @@ fn do_to_base_string(x : Int64, base : Int64) -> String {
 }
 
 ///|
+#gekko.patch
 pub fn to_float(x : Int64) -> Double {
   x.to_double()
 }
 
 ///|
+#gekko.patch
 pub fn bitwise_and(x : Int64, y : Int64) -> Int64 {
   x & y
 }
 
 ///|
+#gekko.patch
 pub fn bitwise_not(x : Int64) -> Int64 {
   x.lnot()
 }
 
 ///|
+#gekko.patch
 pub fn bitwise_or(x : Int64, y : Int64) -> Int64 {
   x | y
 }
 
 ///|
+#gekko.patch
 pub fn bitwise_exclusive_or(x : Int64, y : Int64) -> Int64 {
   x ^ y
 }
 
 ///|
+#gekko.patch
 pub fn bitwise_shift_left(x : Int64, y : Int64) -> Int64 {
   if y < 0L {
     if y <= -64L {
@@ -117,6 +127,7 @@ pub fn bitwise_shift_left(x : Int64, y : Int64) -> Int64 {
 }
 
 ///|
+#gekko.patch
 pub fn bitwise_shift_right(x : Int64, y : Int64) -> Int64 {
   if y < 0L {
     if y <= -64L {

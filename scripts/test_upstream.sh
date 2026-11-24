@@ -165,19 +165,23 @@ pub fn[T : @gprelude.ToDynamic] make_map(
 }
 EOF
 
-cat > "$PROJECT_DIR/gekko.toml" <<'EOF'
-[overrides."stdlib_parity:test/decode_test.make_object"]
+cat >> "$PROJECT_DIR/gleam.toml" <<'EOF'
+
+[tools.gekko.overrides."stdlib_parity:test/decode_test.make_object"]
 package = "decode_test_ffi"
 function = "make_map"
 
-[overrides."stdlib_parity:test/decode_test.make_map"]
+[tools.gekko.overrides."stdlib_parity:test/decode_test.make_map"]
 package = "decode_test_ffi"
 function = "make_map"
 EOF
 
 echo "=== Staging dependencies and transpiling stdlib_parity ==="
 (cd "$PROJECT_DIR" && gleam deps download)
-gekko_out="$("$GEKKO" check --root "$PROJECT_DIR" --out "$OUT_DIR" --target wasm 2>&1)"
+if ! gekko_out="$("$GEKKO" check --root "$PROJECT_DIR" --out "$OUT_DIR" --target wasm 2>&1)"; then
+  echo "$gekko_out" >&2
+  exit 1
+fi
 echo "$gekko_out"
 if echo "$gekko_out" | grep -qi "warning"; then
   echo "FAIL: gekko check emitted warnings for stdlib_parity" >&2
@@ -187,7 +191,10 @@ fi
 for target in $TARGETS; do
   echo "=== Running stdlib_parity tests on $target ==="
   (cd "$OUT_DIR" && moon check --deny-warn --target "$target")
-  out="$(cd "$OUT_DIR" && moon test --target "$target")"
+  if ! out="$(cd "$OUT_DIR" && moon test --target "$target" 2>&1)"; then
+    echo "$out" >&2
+    exit 1
+  fi
   echo "$out"
   case "$out" in
     *"passed: 1527, failed: 0"*) ;;

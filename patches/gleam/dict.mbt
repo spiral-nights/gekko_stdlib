@@ -1,9 +1,11 @@
 ///|
+#gekko.patch
 pub(all) struct Dict[K, V] {
   inner : Map[K, V]
 }
 
 ///|
+#gekko.patch
 priv struct TransientDict[K, V] {
   inner : Map[K, V]
 }
@@ -59,31 +61,37 @@ pub impl[K : Hash, V : Hash] Hash for Dict[K, V] with hash_combine(self, hasher)
 }
 
 ///|
+#gekko.patch
 fn[K, V] to_transient(d : Dict[K, V]) -> TransientDict[K, V] {
   { inner: d.inner.copy() }
 }
 
 ///|
+#gekko.patch
 fn[K, V] from_transient(t : TransientDict[K, V]) -> Dict[K, V] {
   { inner: t.inner }
 }
 
 ///|
+#gekko.patch
 pub fn[K, V] size(d : Dict[K, V]) -> Int64 {
   d.inner.length().to_int64()
 }
 
 ///|
+#gekko.patch
 pub fn[K : Eq + Hash, V] has_key(d : Dict[K, V], key : K) -> Bool {
   d.inner.contains(key)
 }
 
 ///|
+#gekko.patch
 pub fn[K, V] new() -> Dict[K, V] {
   { inner: Default::default() }
 }
 
 ///|
+#gekko.patch
 pub fn[K : Eq + Hash, V] get(from : Dict[K, V], key : K) -> Result[V, Unit] {
   match from.inner.get(key) {
     Some(v) => Ok(v)
@@ -92,6 +100,7 @@ pub fn[K : Eq + Hash, V] get(from : Dict[K, V], key : K) -> Result[V, Unit] {
 }
 
 ///|
+#gekko.patch
 fn[K : Eq + Hash, V] do_insert(
   key : K,
   val : V,
@@ -103,6 +112,7 @@ fn[K : Eq + Hash, V] do_insert(
 }
 
 ///|
+#gekko.patch
 fn[K : Eq + Hash, V] transient_insert(
   key : K,
   val : V,
@@ -113,6 +123,7 @@ fn[K : Eq + Hash, V] transient_insert(
 }
 
 ///|
+#gekko.patch
 pub fn[K : Eq + Hash, V, A] map_values(
   d : Dict[K, V],
   fun : (K, V) -> A,
@@ -123,6 +134,7 @@ pub fn[K : Eq + Hash, V, A] map_values(
 }
 
 ///|
+#gekko.patch
 fn[K : Eq + Hash, V] transient_delete(
   key : K,
   transient : TransientDict[K, V],
@@ -132,6 +144,7 @@ fn[K : Eq + Hash, V] transient_delete(
 }
 
 ///|
+#gekko.patch
 pub fn[K, V, Acc] fold(
   d : Dict[K, V],
   initial : Acc,
@@ -143,6 +156,7 @@ pub fn[K, V, Acc] fold(
 }
 
 ///|
+#gekko.patch
 fn[K : Eq + Hash, V] transient_update_with(
   key : K,
   fun : (V) -> V,

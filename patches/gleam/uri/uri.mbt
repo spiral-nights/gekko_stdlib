@@ -1,4 +1,5 @@
 ///|
+#gekko.patch
 fn pop_codeunit(str : String) -> (Int64, String) {
   if str == "" {
     (0L, "")
@@ -11,6 +12,7 @@ fn pop_codeunit(str : String) -> (Int64, String) {
 }
 
 ///|
+#gekko.patch
 fn codeunit_slice(str : String, from : Int64, length : Int64) -> String {
   if length <= 0L {
     return ""
@@ -49,6 +51,7 @@ fn is_unreserved_byte(b : Byte) -> Bool {
 }
 
 ///|
+#gekko.patch
 pub fn percent_encode(value : String) -> String {
   let hex = "0123456789ABCDEF"
   let bytes = @utf8.encode(value)
@@ -118,11 +121,13 @@ fn percent_decode_bytes(
 }
 
 ///|
+#gekko.patch
 pub fn percent_decode(value : String) -> Result[String, Unit] {
   percent_decode_bytes(value, false)
 }
 
 ///|
+#gekko.patch
 pub fn parse_query(
   query : String,
 ) -> Result[@gprelude.GList[(String, String)], Unit] {

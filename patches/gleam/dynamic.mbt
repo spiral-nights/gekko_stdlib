@@ -1,4 +1,5 @@
 ///|
+#gekko.patch
 pub fn classify(data : @gprelude.Dynamic) -> String {
   match data {
     @gprelude.DynNull => "Nil"
@@ -14,41 +15,49 @@ pub fn classify(data : @gprelude.Dynamic) -> String {
 }
 
 ///|
+#gekko.patch
 pub fn bool(a : Bool) -> @gprelude.Dynamic {
   @gprelude.DynBool(a)
 }
 
 ///|
+#gekko.patch
 pub fn string(a : String) -> @gprelude.Dynamic {
   @gprelude.DynString(a)
 }
 
 ///|
+#gekko.patch
 pub fn float(a : Double) -> @gprelude.Dynamic {
   @gprelude.DynFloat(a)
 }
 
 ///|
+#gekko.patch
 pub fn int(a : Int64) -> @gprelude.Dynamic {
   @gprelude.DynInt(a)
 }
 
 ///|
+#gekko.patch
 pub fn bit_array(a : @gprelude.BitArray) -> @gprelude.Dynamic {
   @gprelude.DynBitArray(a)
 }
 
 ///|
+#gekko.patch
 pub fn list(a : @gprelude.GList[@gprelude.Dynamic]) -> @gprelude.Dynamic {
   @gprelude.DynList(a)
 }
 
 ///|
+#gekko.patch
 pub fn array(a : @gprelude.GList[@gprelude.Dynamic]) -> @gprelude.Dynamic {
   @gprelude.DynArray(a.to_array())
 }
 
 ///|
+#gekko.patch
 pub fn properties(
   entries : @gprelude.GList[(@gprelude.Dynamic, @gprelude.Dynamic)],
 ) -> @gprelude.Dynamic {
@@ -65,6 +74,7 @@ pub fn properties(
 }
 
 ///|
+#gekko.patch
 pub fn nil() -> @gprelude.Dynamic {
   @gprelude.DynNull
 }

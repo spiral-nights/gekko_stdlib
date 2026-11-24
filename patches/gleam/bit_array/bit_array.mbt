@@ -1,24 +1,29 @@
 ///|
+#gekko.patch
 pub fn from_string(x : String) -> @gprelude.BitArray {
   @gprelude.BitArray::from_string(x)
 }
 
 ///|
+#gekko.patch
 pub fn bit_size(x : @gprelude.BitArray) -> Int64 {
   x.bit_size()
 }
 
 ///|
+#gekko.patch
 pub fn byte_size(x : @gprelude.BitArray) -> Int64 {
   x.byte_size()
 }
 
 ///|
+#gekko.patch
 pub fn pad_to_bytes(x : @gprelude.BitArray) -> @gprelude.BitArray {
   x.pad_to_bytes()
 }
 
 ///|
+#gekko.patch
 pub fn slice(
   bits : @gprelude.BitArray,
   at : Int64,
@@ -42,6 +47,7 @@ pub fn slice(
 }
 
 ///|
+#gekko.patch
 pub fn is_utf8(bits : @gprelude.BitArray) -> Bool {
   if bits.bit_length % 8L != 0L {
     return false
@@ -55,6 +61,7 @@ pub fn is_utf8(bits : @gprelude.BitArray) -> Bool {
 }
 
 ///|
+#gekko.patch
 pub fn to_string(bits : @gprelude.BitArray) -> Result[String, Unit] {
   if bits.bit_length % 8L != 0L {
     return Err(())
@@ -67,6 +74,7 @@ pub fn to_string(bits : @gprelude.BitArray) -> Result[String, Unit] {
 }
 
 ///|
+#gekko.patch
 pub fn concat(
   bit_arrays : @gprelude.GList[@gprelude.BitArray],
 ) -> @gprelude.BitArray {
@@ -74,6 +82,7 @@ pub fn concat(
 }
 
 ///|
+#gekko.patch
 pub fn base64_encode(
   input : @gprelude.BitArray,
   padding : Bool,
@@ -125,6 +134,7 @@ fn b64_val(c : Char) -> Int {
 }
 
 ///|
+#gekko.patch
 fn decode64(
   input : String,
 ) -> Result[@gprelude.BitArray, Unit] {
@@ -180,6 +190,7 @@ fn decode64(
 }
 
 ///|
+#gekko.patch
 pub fn base16_encode(input : @gprelude.BitArray) -> String {
   let hex = "0123456789ABCDEF"
   let buf = StringBuilder()
@@ -205,6 +216,7 @@ fn hex_val(c : Char) -> Int {
 }
 
 ///|
+#gekko.patch
 pub fn base16_decode(
   input : String,
 ) -> Result[@gprelude.BitArray, Unit] {
@@ -227,6 +239,7 @@ pub fn base16_decode(
 }
 
 ///|
+#gekko.patch
 pub fn inspect(input : @gprelude.BitArray) -> String {
   @gprelude.GleamInspect::gleam_inspect(input)
 }
@@ -271,6 +284,7 @@ fn compare_tail_val(
 }
 
 ///|
+#gekko.patch
 pub fn compare(
   a : @gprelude.BitArray,
   b : @gprelude.BitArray,
@@ -316,6 +330,7 @@ pub fn compare(
 }
 
 ///|
+#gekko.patch
 pub fn starts_with(
   bits : @gprelude.BitArray,
   prefix : @gprelude.BitArray,

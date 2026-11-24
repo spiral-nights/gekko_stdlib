@@ -9,3 +9,15 @@ gleam_stdlib = ">= 1.0.0 and < 2.0.0"
 
 [dev-dependencies]
 gleeunit = ">= 1.2.0 and < 2.0.0"
+
+[tools.gekko.shim]
+target = "gleam_stdlib"
+version = ">= 1.0.0 and < 2.0.0"
+
+[tools.gekko.type_overrides."gleam_stdlib:gleam/dynamic.Dynamic"]
+package = "gprelude"
+type = "Dynamic"
+
+[tools.gekko.type_overrides."gleam_stdlib:gleam/option.Option"]
+package = "builtin"
+type = "Option"

@@ -1,4 +1,5 @@
 ///|
+#gekko.patch
 #derive(Eq, Debug, Hash)
 pub(all) struct StringTree {
   text : String
@@ -300,11 +301,13 @@ pub fn __split_graphemes(s : String) -> Array[String] {
 }
 
 ///|
+#gekko.patch
 fn do_to_graphemes(s : String) -> @gprelude.GList[String] {
   @gprelude.GList::from_array(__split_graphemes(s)[:])
 }
 
 ///|
+#gekko.patch
 pub fn append_tree(
   tree : StringTree,
   suffix : StringTree,
@@ -313,6 +316,7 @@ pub fn append_tree(
 }
 
 ///|
+#gekko.patch
 pub fn from_strings(xs : @gprelude.GList[String]) -> StringTree {
   let buf = StringBuilder()
   for cur = xs {
@@ -327,6 +331,7 @@ pub fn from_strings(xs : @gprelude.GList[String]) -> StringTree {
 }
 
 ///|
+#gekko.patch
 pub fn concat(trees : @gprelude.GList[StringTree]) -> StringTree {
   let buf = StringBuilder()
   for cur = trees {
@@ -341,31 +346,37 @@ pub fn concat(trees : @gprelude.GList[StringTree]) -> StringTree {
 }
 
 ///|
+#gekko.patch
 pub fn from_string(s : String) -> StringTree {
   { text: s }
 }
 
 ///|
+#gekko.patch
 pub fn to_string(tree : StringTree) -> String {
   tree.text
 }
 
 ///|
+#gekko.patch
 pub fn byte_size(tree : StringTree) -> Int64 {
   @utf8.encode(tree.text).length().to_int64()
 }
 
 ///|
+#gekko.patch
 pub fn lowercase(tree : StringTree) -> StringTree {
   { text: tree.text.to_lower() }
 }
 
 ///|
+#gekko.patch
 pub fn uppercase(tree : StringTree) -> StringTree {
   { text: tree.text.to_upper() }
 }
 
 ///|
+#gekko.patch
 pub fn split(
   tree : StringTree,
   pattern : String,
@@ -384,6 +395,7 @@ pub fn split(
 }
 
 ///|
+#gekko.patch
 pub fn replace(
   tree : StringTree,
   pattern : String,
