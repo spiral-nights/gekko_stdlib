@@ -20,7 +20,7 @@ type = "Option"
 
 [patch."gleam_stdlib:gleam/bit_array"]
 file = "patches/gleam/bit_array.mbt"
-imports = ["moonbitlang/core/buffer as buffer", "moonbitlang/core/encoding/utf8 as utf8"]
+imports = ["moonbitlang/core/buffer", "moonbitlang/core/encoding/utf8"]
 functions = [
   "from_string",
   "bit_size",
@@ -92,8 +92,8 @@ functions = [
 file = "patches/gleam/float.mbt"
 imports = [
   "moonbitlang/core/double as dbl",
-  "moonbitlang/core/math as math",
-  "moonbitlang/core/random as random",
+  "moonbitlang/core/math",
+  "moonbitlang/core/random",
   "moonbitlang/core/string as str",
 ]
 functions = [
@@ -135,8 +135,8 @@ functions = ["print", "print_error", "println", "println_error"]
 file = "patches/gleam/string.mbt"
 imports = [
   "gleam/string_tree",
-  "moonbitlang/core/buffer as buffer",
-  "moonbitlang/core/encoding/utf8 as utf8",
+  "moonbitlang/core/buffer",
+  "moonbitlang/core/encoding/utf8",
 ]
 functions = [
   "length",
@@ -166,7 +166,7 @@ functions = [
 
 [patch."gleam_stdlib:gleam/string_tree"]
 file = "patches/gleam/string_tree.mbt"
-imports = ["moonbitlang/core/encoding/utf8 as utf8"]
+imports = ["moonbitlang/core/encoding/utf8"]
 types = ["StringTree"]
 functions = [
   "append_tree",
@@ -184,7 +184,7 @@ functions = [
 
 [patch."gleam_stdlib:gleam/uri"]
 file = "patches/gleam/uri.mbt"
-imports = ["moonbitlang/core/buffer as buffer", "moonbitlang/core/encoding/utf8 as utf8"]
+imports = ["moonbitlang/core/buffer", "moonbitlang/core/encoding/utf8"]
 functions = [
   "pop_codeunit",
   "codeunit_slice",

@@ -22,6 +22,20 @@ gekko test
 gekko build --release
 ```
 
+## Testing
+
+Run the local smoke tests on MoonBit:
+
+```bash
+gekko test
+```
+
+Run the full upstream `gleam_stdlib` parity suite (`1,527` tests across `wasm`, `wasm-gc`, `js`, and `native`) against unmodified Hex `gleam_stdlib`:
+
+```bash
+./scripts/test_upstream.sh
+```
+
 ## License
 
 MIT — see [`LICENSE`](./LICENSE).
