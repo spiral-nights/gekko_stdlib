@@ -167,7 +167,7 @@ EOF
 
 cat >> "$PROJECT_DIR/gleam.toml" <<'EOF'
 
-[tools.gekko.shims]
+[tools.gekko.use_shims]
 gleam_stdlib = "gekko_stdlib"
 EOF
 

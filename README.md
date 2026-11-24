@@ -2,7 +2,7 @@
 
 Companion MoonBit/Wasm shim overlay package for unmodified upstream [`gleam_stdlib`](https://hex.pm/packages/gleam_stdlib), built for [`gekko`](https://github.com/spiral-nights/gekko).
 
-Instead of forking `gleam_stdlib`, `gekko_stdlib` provides co-located MoonBit module patches (`patches/gleam/**/*.mbt` + `moon.pkg` with `#gekko.patch` attributes) and `[tools.gekko.*]` configuration in `gleam.toml` so upstream `gleam_stdlib` compiles cleanly to MoonBit (`wasm`, `wasm-gc`, `js`, `native`, and Wasm Components).
+Instead of forking `gleam_stdlib`, `gekko_stdlib` provides co-located MoonBit module patches (`patches/gleam/**/*.mbt` + `moon.pkg` with `#gekko.patch` attributes) and `[tools.gekko.shim_for]` configuration in `gleam.toml` so upstream `gleam_stdlib` compiles cleanly to MoonBit (`wasm`, `wasm-gc`, `js`, `native`, and Wasm Components).
 
 ## Usage
 
@@ -13,7 +13,7 @@ Add both unmodified `gleam_stdlib` and `gekko_stdlib` to your `gleam.toml`:
 gleam_stdlib = ">= 1.0.0 and < 2.0.0"
 gekko_stdlib = { git = "https://github.com/spiral-nights/gekko_stdlib.git", ref = "main" }
 
-[tools.gekko.shims]
+[tools.gekko.use_shims]
 gleam_stdlib = "gekko_stdlib"
 ```
 
