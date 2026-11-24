@@ -3,16 +3,8 @@ target = "gleam_stdlib"
 version = ">= 1.0.0 and < 2.0.0"
 
 # =============================================================================
-# External Type Overrides
+# Direct Builtin / Prelude Type Aliases
 # =============================================================================
-
-[type_overrides."gleam_stdlib:gleam/dict.Dict"]
-package = "gleam_stdlib_ffi"
-type = "Dict"
-
-[type_overrides."gleam_stdlib:gleam/dict.TransientDict"]
-package = "gleam_stdlib_ffi"
-type = "TransientDict"
 
 [type_overrides."gleam_stdlib:gleam/dynamic.Dynamic"]
 package = "gprelude"
@@ -22,493 +14,181 @@ type = "Dynamic"
 package = "builtin"
 type = "Option"
 
-[type_overrides."gleam_stdlib:gleam/string_tree.StringTree"]
-package = "gleam_stdlib_ffi"
-type = "StringTree"
-
 # =============================================================================
-# In-Package Injections (avoids circular MoonBit dependencies)
+# Co-Located Module Patches
 # =============================================================================
 
-[module_inject."gleam_stdlib:gleam/dynamic/decode"]
-files = ["overlays/gleam_dynamic_decode_patch.mbt"]
-imports = ["gleam_stdlib_ffi", "gprelude"]
-
-[overrides."gleam_stdlib:gleam/dynamic/decode.list"]
-in_package = "__shim_list"
-
-# =============================================================================
-# gleam/bit_array
-# =============================================================================
-
-[overrides."gleam_stdlib:gleam/bit_array.from_string"]
-package = "gleam_stdlib_ffi"
-function = "bit_array_from_string"
-
-[overrides."gleam_stdlib:gleam/bit_array.bit_size"]
-package = "gleam_stdlib_ffi"
-function = "bit_array_bit_size"
-
-[overrides."gleam_stdlib:gleam/bit_array.byte_size"]
-package = "gleam_stdlib_ffi"
-function = "bit_array_byte_size"
-
-[overrides."gleam_stdlib:gleam/bit_array.pad_to_bytes"]
-package = "gleam_stdlib_ffi"
-function = "bit_array_pad_to_bytes"
-
-[overrides."gleam_stdlib:gleam/bit_array.slice"]
-package = "gleam_stdlib_ffi"
-function = "bit_array_slice"
-
-[overrides."gleam_stdlib:gleam/bit_array.is_utf8"]
-package = "gleam_stdlib_ffi"
-function = "bit_array_is_utf8"
-
-[overrides."gleam_stdlib:gleam/bit_array.to_string"]
-package = "gleam_stdlib_ffi"
-function = "bit_array_to_string"
-
-[overrides."gleam_stdlib:gleam/bit_array.concat"]
-package = "gleam_stdlib_ffi"
-function = "bit_array_concat"
-
-[overrides."gleam_stdlib:gleam/bit_array.base64_encode"]
-package = "gleam_stdlib_ffi"
-function = "bit_array_base64_encode"
-
-[overrides."gleam_stdlib:gleam/bit_array.decode64"]
-package = "gleam_stdlib_ffi"
-function = "bit_array_base64_decode"
-
-[overrides."gleam_stdlib:gleam/bit_array.base16_encode"]
-package = "gleam_stdlib_ffi"
-function = "bit_array_base16_encode"
-
-[overrides."gleam_stdlib:gleam/bit_array.base16_decode"]
-package = "gleam_stdlib_ffi"
-function = "bit_array_base16_decode"
-
-[overrides."gleam_stdlib:gleam/bit_array.inspect"]
-package = "gleam_stdlib_ffi"
-function = "bit_array_inspect"
-
-[overrides."gleam_stdlib:gleam/bit_array.compare"]
-package = "gleam_stdlib_ffi"
-function = "bit_array_compare"
-
-[overrides."gleam_stdlib:gleam/bit_array.starts_with"]
-package = "gleam_stdlib_ffi"
-function = "bit_array_starts_with"
-
-# =============================================================================
-# gleam/dict
-# =============================================================================
-
-[overrides."gleam_stdlib:gleam/dict.to_transient"]
-package = "gleam_stdlib_ffi"
-function = "dict_to_transient"
-
-[overrides."gleam_stdlib:gleam/dict.from_transient"]
-package = "gleam_stdlib_ffi"
-function = "dict_from_transient"
-
-[overrides."gleam_stdlib:gleam/dict.size"]
-package = "gleam_stdlib_ffi"
-function = "dict_size"
-
-[overrides."gleam_stdlib:gleam/dict.has_key"]
-package = "gleam_stdlib_ffi"
-function = "dict_has_key"
-
-[overrides."gleam_stdlib:gleam/dict.new"]
-package = "gleam_stdlib_ffi"
-function = "dict_new"
-
-[overrides."gleam_stdlib:gleam/dict.get"]
-package = "gleam_stdlib_ffi"
-function = "dict_get"
-
-[overrides."gleam_stdlib:gleam/dict.insert"]
-package = "gleam_stdlib_ffi"
-function = "dict_insert"
-
-[overrides."gleam_stdlib:gleam/dict.transient_insert"]
-package = "gleam_stdlib_ffi"
-function = "dict_transient_insert"
-
-[overrides."gleam_stdlib:gleam/dict.map_values"]
-package = "gleam_stdlib_ffi"
-function = "dict_map_values"
-
-[overrides."gleam_stdlib:gleam/dict.transient_delete"]
-package = "gleam_stdlib_ffi"
-function = "dict_transient_delete"
-
-[overrides."gleam_stdlib:gleam/dict.fold"]
-package = "gleam_stdlib_ffi"
-function = "dict_fold"
-
-[overrides."gleam_stdlib:gleam/dict.transient_update_with"]
-package = "gleam_stdlib_ffi"
-function = "dict_transient_update_with"
-
-# =============================================================================
-# gleam/dynamic
-# =============================================================================
-
-[overrides."gleam_stdlib:gleam/dynamic.classify"]
-package = "gleam_stdlib_ffi"
-function = "dynamic_classify"
-
-[overrides."gleam_stdlib:gleam/dynamic.bool"]
-package = "gleam_stdlib_ffi"
-function = "dynamic_bool"
-
-[overrides."gleam_stdlib:gleam/dynamic.string"]
-package = "gleam_stdlib_ffi"
-function = "dynamic_string"
-
-[overrides."gleam_stdlib:gleam/dynamic.float"]
-package = "gleam_stdlib_ffi"
-function = "dynamic_float"
-
-[overrides."gleam_stdlib:gleam/dynamic.int"]
-package = "gleam_stdlib_ffi"
-function = "dynamic_int"
-
-[overrides."gleam_stdlib:gleam/dynamic.bit_array"]
-package = "gleam_stdlib_ffi"
-function = "dynamic_bit_array"
-
-[overrides."gleam_stdlib:gleam/dynamic.list"]
-package = "gleam_stdlib_ffi"
-function = "dynamic_list"
-
-[overrides."gleam_stdlib:gleam/dynamic.array"]
-package = "gleam_stdlib_ffi"
-function = "dynamic_array"
-
-[overrides."gleam_stdlib:gleam/dynamic.properties"]
-package = "gleam_stdlib_ffi"
-function = "dynamic_properties"
-
-[overrides."gleam_stdlib:gleam/dynamic.nil"]
-package = "gleam_stdlib_ffi"
-function = "dynamic_nil"
-
-# =============================================================================
-# gleam/dynamic/decode
-# =============================================================================
-
-[overrides."gleam_stdlib:gleam/dynamic/decode.lookup_field"]
-in_package = "__shim_lookup_field"
-
-[overrides."gleam_stdlib:gleam/dynamic/decode.key_to_string"]
-in_package = "__shim_key_to_string"
-
-[overrides."gleam_stdlib:gleam/dynamic/decode.decode_string"]
-in_package = "__shim_decode_string"
-
-[overrides."gleam_stdlib:gleam/dynamic/decode.decode_bool"]
-in_package = "__shim_decode_bool"
-
-[overrides."gleam_stdlib:gleam/dynamic/decode.decode_int"]
-in_package = "__shim_decode_int"
-
-[overrides."gleam_stdlib:gleam/dynamic/decode.decode_float"]
-in_package = "__shim_decode_float"
-
-[overrides."gleam_stdlib:gleam/dynamic/decode.decode_bit_array"]
-in_package = "__shim_decode_bit_array"
-
-[overrides."gleam_stdlib:gleam/dynamic/decode.decode_dict"]
-in_package = "__shim_decode_dict"
-
-[overrides."gleam_stdlib:gleam/dynamic/decode.is_null"]
-package = "gleam_stdlib_ffi"
-function = "decode_is_null"
-
-# =============================================================================
-# gleam/float
-# =============================================================================
-
-[overrides."gleam_stdlib:gleam/float.parse"]
-package = "gleam_stdlib_ffi"
-function = "float_parse"
-
-[overrides."gleam_stdlib:gleam/float.to_string"]
-package = "gleam_stdlib_ffi"
-function = "float_to_string"
-
-[overrides."gleam_stdlib:gleam/float.ceiling"]
-package = "gleam_stdlib_ffi"
-function = "float_ceiling"
-
-[overrides."gleam_stdlib:gleam/float.floor"]
-package = "gleam_stdlib_ffi"
-function = "float_floor"
-
-[overrides."gleam_stdlib:gleam/float.round"]
-package = "gleam_stdlib_ffi"
-function = "float_round"
-
-[overrides."gleam_stdlib:gleam/float.truncate"]
-package = "gleam_stdlib_ffi"
-function = "float_truncate"
-
-[overrides."gleam_stdlib:gleam/float.do_to_float"]
-package = "gleam_stdlib_ffi"
-function = "int_to_float"
-
-[overrides."gleam_stdlib:gleam/float.do_power"]
-package = "gleam_stdlib_ffi"
-function = "float_power"
-
-[overrides."gleam_stdlib:gleam/float.random"]
-package = "gleam_stdlib_ffi"
-function = "float_random"
-
-[overrides."gleam_stdlib:gleam/float.do_log"]
-package = "gleam_stdlib_ffi"
-function = "float_log"
-
-[overrides."gleam_stdlib:gleam/float.exponential"]
-package = "gleam_stdlib_ffi"
-function = "float_exponential"
-
-# =============================================================================
-# gleam/int
-# =============================================================================
-
-[overrides."gleam_stdlib:gleam/int.parse"]
-package = "gleam_stdlib_ffi"
-function = "int_parse"
-
-[overrides."gleam_stdlib:gleam/int.do_base_parse"]
-package = "gleam_stdlib_ffi"
-function = "int_base_parse"
-
-[overrides."gleam_stdlib:gleam/int.to_string"]
-package = "gleam_stdlib_ffi"
-function = "int_to_string"
-
-[overrides."gleam_stdlib:gleam/int.do_to_base_string"]
-package = "gleam_stdlib_ffi"
-function = "int_to_base_string"
-
-[overrides."gleam_stdlib:gleam/int.to_float"]
-package = "gleam_stdlib_ffi"
-function = "int_to_float"
-
-[overrides."gleam_stdlib:gleam/int.bitwise_and"]
-package = "gleam_stdlib_ffi"
-function = "int_bitwise_and"
-
-[overrides."gleam_stdlib:gleam/int.bitwise_not"]
-package = "gleam_stdlib_ffi"
-function = "int_bitwise_not"
-
-[overrides."gleam_stdlib:gleam/int.bitwise_or"]
-package = "gleam_stdlib_ffi"
-function = "int_bitwise_or"
-
-[overrides."gleam_stdlib:gleam/int.bitwise_exclusive_or"]
-package = "gleam_stdlib_ffi"
-function = "int_bitwise_exclusive_or"
-
-[overrides."gleam_stdlib:gleam/int.bitwise_shift_left"]
-package = "gleam_stdlib_ffi"
-function = "int_bitwise_shift_left"
-
-[overrides."gleam_stdlib:gleam/int.bitwise_shift_right"]
-package = "gleam_stdlib_ffi"
-function = "int_bitwise_shift_right"
-
-# =============================================================================
-# gleam/io
-# =============================================================================
-
-[overrides."gleam_stdlib:gleam/io.print"]
-package = "gleam_stdlib_ffi"
-function = "io_print"
-
-[overrides."gleam_stdlib:gleam/io.print_error"]
-package = "gleam_stdlib_ffi"
-function = "io_print_error"
-
-[overrides."gleam_stdlib:gleam/io.println"]
-package = "gleam_stdlib_ffi"
-function = "io_println"
-
-[overrides."gleam_stdlib:gleam/io.println_error"]
-package = "gleam_stdlib_ffi"
-function = "io_println_error"
-
-# =============================================================================
-# gleam/string
-# =============================================================================
-
-[overrides."gleam_stdlib:gleam/string.length"]
-package = "gleam_stdlib_ffi"
-function = "string_length"
-
-[overrides."gleam_stdlib:gleam/string.lowercase"]
-package = "gleam_stdlib_ffi"
-function = "string_lowercase"
-
-[overrides."gleam_stdlib:gleam/string.uppercase"]
-package = "gleam_stdlib_ffi"
-function = "string_uppercase"
-
-[overrides."gleam_stdlib:gleam/string.less_than"]
-package = "gleam_stdlib_ffi"
-function = "string_less_than"
-
-[overrides."gleam_stdlib:gleam/string.grapheme_slice"]
-package = "gleam_stdlib_ffi"
-function = "string_grapheme_slice"
-
-[overrides."gleam_stdlib:gleam/string.unsafe_byte_slice"]
-package = "gleam_stdlib_ffi"
-function = "string_byte_slice"
-
-[overrides."gleam_stdlib:gleam/string.crop"]
-package = "gleam_stdlib_ffi"
-function = "string_crop"
-
-[overrides."gleam_stdlib:gleam/string.contains"]
-package = "gleam_stdlib_ffi"
-function = "string_contains"
-
-[overrides."gleam_stdlib:gleam/string.starts_with"]
-package = "gleam_stdlib_ffi"
-function = "string_starts_with"
-
-[overrides."gleam_stdlib:gleam/string.ends_with"]
-package = "gleam_stdlib_ffi"
-function = "string_ends_with"
-
-[overrides."gleam_stdlib:gleam/string.split_once"]
-package = "gleam_stdlib_ffi"
-function = "string_split_once"
-
-[overrides."gleam_stdlib:gleam/string.trim"]
-package = "gleam_stdlib_ffi"
-function = "string_trim"
-
-[overrides."gleam_stdlib:gleam/string.trim_start"]
-package = "gleam_stdlib_ffi"
-function = "string_trim_start"
-
-[overrides."gleam_stdlib:gleam/string.trim_end"]
-package = "gleam_stdlib_ffi"
-function = "string_trim_end"
-
-[overrides."gleam_stdlib:gleam/string.pop_grapheme"]
-package = "gleam_stdlib_ffi"
-function = "string_pop_grapheme"
-
-[overrides."gleam_stdlib:gleam/string.unsafe_int_to_utf_codepoint"]
-package = "gleam_stdlib_ffi"
-function = "unsafe_int_to_utf_codepoint"
-
-[overrides."gleam_stdlib:gleam/string.to_utf_codepoints"]
-package = "gleam_stdlib_ffi"
-function = "string_to_utf_codepoints"
-
-[overrides."gleam_stdlib:gleam/string.from_utf_codepoints"]
-package = "gleam_stdlib_ffi"
-function = "string_from_utf_codepoints"
-
-[overrides."gleam_stdlib:gleam/string.utf_codepoint_to_int"]
-package = "gleam_stdlib_ffi"
-function = "utf_codepoint_to_int"
-
-[overrides."gleam_stdlib:gleam/string.do_inspect"]
-package = "gleam_stdlib_ffi"
-function = "string_do_inspect"
-
-[overrides."gleam_stdlib:gleam/string.byte_size"]
-package = "gleam_stdlib_ffi"
-function = "string_byte_size"
-
-[overrides."gleam_stdlib:gleam/string.remove_prefix"]
-package = "gleam_stdlib_ffi"
-function = "string_remove_prefix"
-
-[overrides."gleam_stdlib:gleam/string.remove_suffix"]
-package = "gleam_stdlib_ffi"
-function = "string_remove_suffix"
-
-# =============================================================================
-# gleam/string_tree
-# =============================================================================
-
-[overrides."gleam_stdlib:gleam/string_tree.append_tree"]
-package = "gleam_stdlib_ffi"
-function = "string_tree_append_tree"
-
-[overrides."gleam_stdlib:gleam/string_tree.from_strings"]
-package = "gleam_stdlib_ffi"
-function = "string_tree_from_strings"
-
-[overrides."gleam_stdlib:gleam/string_tree.concat"]
-package = "gleam_stdlib_ffi"
-function = "string_tree_concat"
-
-[overrides."gleam_stdlib:gleam/string_tree.from_string"]
-package = "gleam_stdlib_ffi"
-function = "string_tree_from_string"
-
-[overrides."gleam_stdlib:gleam/string_tree.to_string"]
-package = "gleam_stdlib_ffi"
-function = "string_tree_to_string"
-
-[overrides."gleam_stdlib:gleam/string_tree.byte_size"]
-package = "gleam_stdlib_ffi"
-function = "string_tree_byte_size"
-
-[overrides."gleam_stdlib:gleam/string_tree.lowercase"]
-package = "gleam_stdlib_ffi"
-function = "string_tree_lowercase"
-
-[overrides."gleam_stdlib:gleam/string_tree.uppercase"]
-package = "gleam_stdlib_ffi"
-function = "string_tree_uppercase"
-
-[overrides."gleam_stdlib:gleam/string_tree.do_to_graphemes"]
-package = "gleam_stdlib_ffi"
-function = "string_to_graphemes"
-
-[overrides."gleam_stdlib:gleam/string_tree.split"]
-package = "gleam_stdlib_ffi"
-function = "string_tree_split"
-
-[overrides."gleam_stdlib:gleam/string_tree.replace"]
-package = "gleam_stdlib_ffi"
-function = "string_tree_replace"
-
-# =============================================================================
-# gleam/uri
-# =============================================================================
-
-[overrides."gleam_stdlib:gleam/uri.pop_codeunit"]
-package = "gleam_stdlib_ffi"
-function = "uri_pop_codeunit"
-
-[overrides."gleam_stdlib:gleam/uri.codeunit_slice"]
-package = "gleam_stdlib_ffi"
-function = "uri_codeunit_slice"
-
-[overrides."gleam_stdlib:gleam/uri.parse_query"]
-package = "gleam_stdlib_ffi"
-function = "uri_parse_query"
-
-[overrides."gleam_stdlib:gleam/uri.percent_encode"]
-package = "gleam_stdlib_ffi"
-function = "uri_percent_encode"
-
-[overrides."gleam_stdlib:gleam/uri.percent_decode"]
-package = "gleam_stdlib_ffi"
-function = "uri_percent_decode"
+[patch."gleam_stdlib:gleam/bit_array"]
+file = "patches/gleam/bit_array.mbt"
+imports = ["moonbitlang/core/buffer as buffer", "moonbitlang/core/encoding/utf8 as utf8"]
+functions = [
+  "from_string",
+  "bit_size",
+  "byte_size",
+  "pad_to_bytes",
+  "slice",
+  "is_utf8",
+  "to_string",
+  "concat",
+  "base64_encode",
+  "decode64",
+  "base16_encode",
+  "base16_decode",
+  "inspect",
+  "compare",
+  "starts_with",
+]
+
+[patch."gleam_stdlib:gleam/dict"]
+file = "patches/gleam/dict.mbt"
+types = ["Dict", "TransientDict"]
+functions = [
+  "to_transient",
+  "from_transient",
+  "size",
+  "has_key",
+  "new",
+  "get",
+  "do_insert",
+  "transient_insert",
+  "map_values",
+  "transient_delete",
+  "fold",
+  "transient_update_with",
+]
+
+[patch."gleam_stdlib:gleam/dynamic"]
+file = "patches/gleam/dynamic.mbt"
+functions = [
+  "classify",
+  "bool",
+  "string",
+  "float",
+  "int",
+  "bit_array",
+  "list",
+  "array",
+  "properties",
+  "nil",
+]
+
+[patch."gleam_stdlib:gleam/dynamic/decode"]
+file = "patches/gleam/dynamic/decode.mbt"
+imports = ["gleam/dict", "gleam/dynamic"]
+functions = [
+  "lookup_field",
+  "key_to_string",
+  "decode_string",
+  "decode_bool",
+  "decode_int",
+  "decode_float",
+  "decode_bit_array",
+  "list",
+  "decode_dict",
+  "is_null",
+]
+
+[patch."gleam_stdlib:gleam/float"]
+file = "patches/gleam/float.mbt"
+imports = [
+  "moonbitlang/core/double as dbl",
+  "moonbitlang/core/math as math",
+  "moonbitlang/core/random as random",
+  "moonbitlang/core/string as str",
+]
+functions = [
+  "parse",
+  "to_string",
+  "ceiling",
+  "floor",
+  "round",
+  "truncate",
+  "do_to_float",
+  "do_power",
+  "random",
+  "do_log",
+  "exponential",
+]
+
+[patch."gleam_stdlib:gleam/int"]
+file = "patches/gleam/int.mbt"
+imports = ["moonbitlang/core/string as str"]
+functions = [
+  "parse",
+  "do_base_parse",
+  "to_string",
+  "do_to_base_string",
+  "to_float",
+  "bitwise_and",
+  "bitwise_not",
+  "bitwise_or",
+  "bitwise_exclusive_or",
+  "bitwise_shift_left",
+  "bitwise_shift_right",
+]
+
+[patch."gleam_stdlib:gleam/io"]
+file = "patches/gleam/io.mbt"
+functions = ["print", "print_error", "println", "println_error"]
+
+[patch."gleam_stdlib:gleam/string"]
+file = "patches/gleam/string.mbt"
+imports = [
+  "gleam/string_tree",
+  "moonbitlang/core/buffer as buffer",
+  "moonbitlang/core/encoding/utf8 as utf8",
+]
+functions = [
+  "length",
+  "lowercase",
+  "uppercase",
+  "less_than",
+  "grapheme_slice",
+  "unsafe_byte_slice",
+  "crop",
+  "contains",
+  "starts_with",
+  "ends_with",
+  "split_once",
+  "trim",
+  "trim_start",
+  "trim_end",
+  "pop_grapheme",
+  "unsafe_int_to_utf_codepoint",
+  "to_utf_codepoints",
+  "from_utf_codepoints",
+  "utf_codepoint_to_int",
+  "do_inspect",
+  "byte_size",
+  "remove_prefix",
+  "remove_suffix",
+]
+
+[patch."gleam_stdlib:gleam/string_tree"]
+file = "patches/gleam/string_tree.mbt"
+imports = ["moonbitlang/core/encoding/utf8 as utf8"]
+types = ["StringTree"]
+functions = [
+  "append_tree",
+  "from_strings",
+  "concat",
+  "from_string",
+  "to_string",
+  "byte_size",
+  "lowercase",
+  "uppercase",
+  "do_to_graphemes",
+  "split",
+  "replace",
+]
+
+[patch."gleam_stdlib:gleam/uri"]
+file = "patches/gleam/uri.mbt"
+imports = ["moonbitlang/core/buffer as buffer", "moonbitlang/core/encoding/utf8 as utf8"]
+functions = [
+  "pop_codeunit",
+  "codeunit_slice",
+  "parse_query",
+  "percent_encode",
+  "percent_decode",
+]

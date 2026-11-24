@@ -4,7 +4,7 @@ pub(all) struct Dict[K, V] {
 }
 
 ///|
-pub(all) struct TransientDict[K, V] {
+priv struct TransientDict[K, V] {
   inner : Map[K, V]
 }
 
@@ -59,32 +59,32 @@ pub impl[K : Hash, V : Hash] Hash for Dict[K, V] with hash_combine(self, hasher)
 }
 
 ///|
-pub fn[K, V] dict_to_transient(d : Dict[K, V]) -> TransientDict[K, V] {
+fn[K, V] to_transient(d : Dict[K, V]) -> TransientDict[K, V] {
   { inner: d.inner.copy() }
 }
 
 ///|
-pub fn[K, V] dict_from_transient(t : TransientDict[K, V]) -> Dict[K, V] {
+fn[K, V] from_transient(t : TransientDict[K, V]) -> Dict[K, V] {
   { inner: t.inner }
 }
 
 ///|
-pub fn[K, V] dict_size(d : Dict[K, V]) -> Int64 {
+pub fn[K, V] size(d : Dict[K, V]) -> Int64 {
   d.inner.length().to_int64()
 }
 
 ///|
-pub fn[K : Eq + Hash, V] dict_has_key(d : Dict[K, V], key : K) -> Bool {
+pub fn[K : Eq + Hash, V] has_key(d : Dict[K, V], key : K) -> Bool {
   d.inner.contains(key)
 }
 
 ///|
-pub fn[K, V] dict_new() -> Dict[K, V] {
+pub fn[K, V] new() -> Dict[K, V] {
   { inner: Default::default() }
 }
 
 ///|
-pub fn[K : Eq + Hash, V] dict_get(from : Dict[K, V], key : K) -> Result[V, Unit] {
+pub fn[K : Eq + Hash, V] get(from : Dict[K, V], key : K) -> Result[V, Unit] {
   match from.inner.get(key) {
     Some(v) => Ok(v)
     None => Err(())
@@ -92,10 +92,10 @@ pub fn[K : Eq + Hash, V] dict_get(from : Dict[K, V], key : K) -> Result[V, Unit]
 }
 
 ///|
-pub fn[K : Eq + Hash, V] dict_insert(
-  d : Dict[K, V],
+fn[K : Eq + Hash, V] do_insert(
   key : K,
   val : V,
+  d : Dict[K, V],
 ) -> Dict[K, V] {
   let m = d.inner.copy()
   m.set(key, val)
@@ -103,7 +103,7 @@ pub fn[K : Eq + Hash, V] dict_insert(
 }
 
 ///|
-pub fn[K : Eq + Hash, V] dict_transient_insert(
+fn[K : Eq + Hash, V] transient_insert(
   key : K,
   val : V,
   transient : TransientDict[K, V],
@@ -113,7 +113,7 @@ pub fn[K : Eq + Hash, V] dict_transient_insert(
 }
 
 ///|
-pub fn[K : Eq + Hash, V, A] dict_map_values(
+pub fn[K : Eq + Hash, V, A] map_values(
   d : Dict[K, V],
   fun : (K, V) -> A,
 ) -> Dict[K, A] {
@@ -123,7 +123,7 @@ pub fn[K : Eq + Hash, V, A] dict_map_values(
 }
 
 ///|
-pub fn[K : Eq + Hash, V] dict_transient_delete(
+fn[K : Eq + Hash, V] transient_delete(
   key : K,
   transient : TransientDict[K, V],
 ) -> TransientDict[K, V] {
@@ -132,7 +132,7 @@ pub fn[K : Eq + Hash, V] dict_transient_delete(
 }
 
 ///|
-pub fn[K, V, Acc] dict_fold(
+pub fn[K, V, Acc] fold(
   d : Dict[K, V],
   initial : Acc,
   fun : (Acc, K, V) -> Acc,
@@ -143,7 +143,7 @@ pub fn[K, V, Acc] dict_fold(
 }
 
 ///|
-pub fn[K : Eq + Hash, V] dict_transient_update_with(
+fn[K : Eq + Hash, V] transient_update_with(
   key : K,
   fun : (V) -> V,
   init : V,

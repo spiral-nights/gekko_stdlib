@@ -1,25 +1,25 @@
 ///|
-pub fn bit_array_from_string(x : String) -> @gprelude.BitArray {
+pub fn from_string(x : String) -> @gprelude.BitArray {
   @gprelude.BitArray::from_string(x)
 }
 
 ///|
-pub fn bit_array_bit_size(x : @gprelude.BitArray) -> Int64 {
+pub fn bit_size(x : @gprelude.BitArray) -> Int64 {
   x.bit_size()
 }
 
 ///|
-pub fn bit_array_byte_size(x : @gprelude.BitArray) -> Int64 {
+pub fn byte_size(x : @gprelude.BitArray) -> Int64 {
   x.byte_size()
 }
 
 ///|
-pub fn bit_array_pad_to_bytes(x : @gprelude.BitArray) -> @gprelude.BitArray {
+pub fn pad_to_bytes(x : @gprelude.BitArray) -> @gprelude.BitArray {
   x.pad_to_bytes()
 }
 
 ///|
-pub fn bit_array_slice(
+pub fn slice(
   bits : @gprelude.BitArray,
   at : Int64,
   take : Int64,
@@ -42,12 +42,12 @@ pub fn bit_array_slice(
 }
 
 ///|
-pub fn bit_array_is_utf8(bits : @gprelude.BitArray) -> Bool {
+pub fn is_utf8(bits : @gprelude.BitArray) -> Bool {
   if bits.bit_length % 8L != 0L {
     return false
   }
   try {
-    @prelude.ignore(@utf8.decode(bits.data[:]))
+    ignore(@utf8.decode(bits.data[:]))
     true
   } catch {
     _ => false
@@ -55,7 +55,7 @@ pub fn bit_array_is_utf8(bits : @gprelude.BitArray) -> Bool {
 }
 
 ///|
-pub fn bit_array_to_string(bits : @gprelude.BitArray) -> Result[String, Unit] {
+pub fn to_string(bits : @gprelude.BitArray) -> Result[String, Unit] {
   if bits.bit_length % 8L != 0L {
     return Err(())
   }
@@ -67,14 +67,14 @@ pub fn bit_array_to_string(bits : @gprelude.BitArray) -> Result[String, Unit] {
 }
 
 ///|
-pub fn bit_array_concat(
+pub fn concat(
   bit_arrays : @gprelude.GList[@gprelude.BitArray],
 ) -> @gprelude.BitArray {
   @gprelude.BitArray::concat(bit_arrays.to_array()[:])
 }
 
 ///|
-pub fn bit_array_base64_encode(
+pub fn base64_encode(
   input : @gprelude.BitArray,
   padding : Bool,
 ) -> String {
@@ -125,7 +125,7 @@ fn b64_val(c : Char) -> Int {
 }
 
 ///|
-pub fn bit_array_base64_decode(
+fn decode64(
   input : String,
 ) -> Result[@gprelude.BitArray, Unit] {
   if input == "" {
@@ -180,7 +180,7 @@ pub fn bit_array_base64_decode(
 }
 
 ///|
-pub fn bit_array_base16_encode(input : @gprelude.BitArray) -> String {
+pub fn base16_encode(input : @gprelude.BitArray) -> String {
   let hex = "0123456789ABCDEF"
   let buf = StringBuilder()
   for b in input.data {
@@ -205,7 +205,7 @@ fn hex_val(c : Char) -> Int {
 }
 
 ///|
-pub fn bit_array_base16_decode(
+pub fn base16_decode(
   input : String,
 ) -> Result[@gprelude.BitArray, Unit] {
   let chars = input.iter().collect()
@@ -227,7 +227,7 @@ pub fn bit_array_base16_decode(
 }
 
 ///|
-pub fn bit_array_inspect(input : @gprelude.BitArray) -> String {
+pub fn inspect(input : @gprelude.BitArray) -> String {
   @gprelude.GleamInspect::gleam_inspect(input)
 }
 
@@ -271,10 +271,10 @@ fn compare_tail_val(
 }
 
 ///|
-pub fn bit_array_compare(
+pub fn compare(
   a : @gprelude.BitArray,
   b : @gprelude.BitArray,
-) -> @gleam_order.Order {
+) -> @order.Order {
   let full_a = (a.bit_length / 8L).to_int()
   let full_b = (b.bit_length / 8L).to_int()
   let min_bytes = if full_a < full_b { full_a } else { full_b }
@@ -283,9 +283,9 @@ pub fn bit_array_compare(
     let ba = a.data[i].to_int()
     let bb = b.data[i].to_int()
     if ba < bb {
-      return @gleam_order.Lt
+      return @order.Lt
     } else if ba > bb {
-      return @gleam_order.Gt
+      return @order.Gt
     }
     i = i + 1
   }
@@ -293,30 +293,30 @@ pub fn bit_array_compare(
   let rem_a = a.bit_length - consumed_bits
   let rem_b = b.bit_length - consumed_bits
   if rem_a == 0L && rem_b == 0L {
-    @gleam_order.Eq
+    @order.Eq
   } else if rem_b == 0L {
-    @gleam_order.Gt
+    @order.Gt
   } else if rem_a == 0L {
-    @gleam_order.Lt
+    @order.Lt
   } else {
     let va = compare_tail_val(a, min_bytes, rem_a)
     let vb = compare_tail_val(b, min_bytes, rem_b)
     if va < vb {
-      @gleam_order.Lt
+      @order.Lt
     } else if va > vb {
-      @gleam_order.Gt
+      @order.Gt
     } else if rem_a > rem_b {
-      @gleam_order.Gt
+      @order.Gt
     } else if rem_a < rem_b {
-      @gleam_order.Lt
+      @order.Lt
     } else {
-      @gleam_order.Eq
+      @order.Eq
     }
   }
 }
 
 ///|
-pub fn bit_array_starts_with(
+pub fn starts_with(
   bits : @gprelude.BitArray,
   prefix : @gprelude.BitArray,
 ) -> Bool {

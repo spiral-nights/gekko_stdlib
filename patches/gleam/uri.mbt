@@ -1,25 +1,5 @@
 ///|
-pub fn io_print(s : String) -> Unit {
-  @prelude.println(s)
-}
-
-///|
-pub fn io_print_error(s : String) -> Unit {
-  @prelude.eprintln(s)
-}
-
-///|
-pub fn io_println(s : String) -> Unit {
-  @prelude.println(s)
-}
-
-///|
-pub fn io_println_error(s : String) -> Unit {
-  @prelude.eprintln(s)
-}
-
-///|
-pub fn uri_pop_codeunit(str : String) -> (Int64, String) {
+fn pop_codeunit(str : String) -> (Int64, String) {
   if str == "" {
     (0L, "")
   } else {
@@ -31,11 +11,7 @@ pub fn uri_pop_codeunit(str : String) -> (Int64, String) {
 }
 
 ///|
-pub fn uri_codeunit_slice(
-  str : String,
-  from : Int64,
-  length : Int64,
-) -> String {
+fn codeunit_slice(str : String, from : Int64, length : Int64) -> String {
   if length <= 0L {
     return ""
   }
@@ -73,7 +49,7 @@ fn is_unreserved_byte(b : Byte) -> Bool {
 }
 
 ///|
-pub fn uri_percent_encode(value : String) -> String {
+pub fn percent_encode(value : String) -> String {
   let hex = "0123456789ABCDEF"
   let bytes = @utf8.encode(value)
   let buf = StringBuilder()
@@ -142,12 +118,12 @@ fn percent_decode_bytes(
 }
 
 ///|
-pub fn uri_percent_decode(value : String) -> Result[String, Unit] {
+pub fn percent_decode(value : String) -> Result[String, Unit] {
   percent_decode_bytes(value, false)
 }
 
 ///|
-pub fn uri_parse_query(
+pub fn parse_query(
   query : String,
 ) -> Result[@gprelude.GList[(String, String)], Unit] {
   if query == "" {
