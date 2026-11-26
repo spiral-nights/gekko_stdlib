@@ -1,6 +1,0 @@
-import {
-  "moonbitlang/core/double" @dbl,
-  "moonbitlang/core/math",
-  "moonbitlang/core/random",
-  "moonbitlang/core/string" @str,
-}

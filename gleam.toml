@@ -13,3 +13,46 @@ gleeunit = ">= 1.2.0 and < 2.0.0"
 [tools.gekko.shim_for]
 package = "gleam_stdlib"
 version = ">= 1.0.0 and < 2.0.0"
+
+[tools.gekko.patches."gleam/bit_array"]
+imports = [
+  "moonbitlang/core/buffer",
+  "moonbitlang/core/encoding/utf8",
+]
+
+[tools.gekko.patches."gleam/dynamic/decode"]
+imports = [
+  "gleam/dict",
+  "gleam/dynamic",
+]
+
+[tools.gekko.patches."gleam/float"]
+imports = [
+  "moonbitlang/core/double @dbl",
+  "moonbitlang/core/math",
+  "moonbitlang/core/random",
+  "moonbitlang/core/string @str",
+]
+
+[tools.gekko.patches."gleam/int"]
+imports = [
+  "moonbitlang/core/string @str",
+]
+
+[tools.gekko.patches."gleam/string"]
+imports = [
+  "gleam/string_tree",
+  "moonbitlang/core/buffer",
+  "moonbitlang/core/encoding/utf8",
+]
+
+[tools.gekko.patches."gleam/string_tree"]
+imports = [
+  "moonbitlang/core/encoding/utf8",
+]
+
+[tools.gekko.patches."gleam/uri"]
+imports = [
+  "moonbitlang/core/buffer",
+  "moonbitlang/core/encoding/utf8",
+]

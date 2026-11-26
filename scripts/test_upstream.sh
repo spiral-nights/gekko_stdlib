@@ -169,14 +169,14 @@ cat >> "$PROJECT_DIR/gleam.toml" <<'EOF'
 
 [tools.gekko.use_shims]
 gleam_stdlib = "gekko_stdlib"
+
+[tools.gekko.patches."test/decode_test"]
+imports = [
+  "decode_test_ffi",
+]
 EOF
 
 mkdir -p "$PROJECT_DIR/patches/test/decode_test"
-cat > "$PROJECT_DIR/patches/test/decode_test/moon.pkg" <<'EOF'
-import {
-  "decode_test_ffi",
-}
-EOF
 
 cat > "$PROJECT_DIR/patches/test/decode_test/decode_test.mbt" <<'EOF'
 ///|

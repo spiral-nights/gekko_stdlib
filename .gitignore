@@ -1,3 +1,13 @@
 /build/
+/_build/
+/moon.work
+/moonbit/gprelude/
+/patches/moon.mod
+/patches/gprelude/
+/patches/_build/
+/patches/.mooncakes/
+patches/**/moon.pkg
+patches/**/*.g.mbt
+pkg.generated.mbti
 manifest.toml
 .DS_Store
