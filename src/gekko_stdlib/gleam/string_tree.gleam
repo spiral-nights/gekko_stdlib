@@ -4,7 +4,10 @@ import gekko_stdlib/ffi/utf8 as mutf8
 import gekko_stdlib/graphemes
 import gleam/list
 import gleam/option.{None, Some}
-import gleam/string_tree.{type StringTree}
+
+/// @patch_type("gleam/string_tree.StringTree")
+pub type StringTree =
+  String
 
 /// @patch("gleam/string_tree.do_to_graphemes")
 pub fn do_to_graphemes(string: String) -> List(String) {
@@ -31,17 +34,13 @@ pub fn concat(trees: List(StringTree)) -> StringTree {
 }
 
 /// @patch("gleam/string_tree.from_string")
-/// @external(moonbit, "stdlib_builtin_adapter", "string_to_string")
 pub fn from_string(string: String) -> StringTree {
-  let _ = string
-  panic as "Implemented in MoonBit"
+  string
 }
 
 /// @patch("gleam/string_tree.to_string")
-/// @external(moonbit, "stdlib_builtin_adapter", "string_to_string")
 pub fn to_string(tree: StringTree) -> String {
-  let _ = tree
-  panic as "Implemented in MoonBit"
+  tree
 }
 
 /// @patch("gleam/string_tree.byte_size")

@@ -1,12 +1,53 @@
 import gekko_stdlib/ffi/hashmap as mhashmap
-import gleam/dict.{type Dict}
 import gleam/option.{None, Some}
 
-fn fold_list(xs: List(a), acc: b, fun: fn(b, a) -> b) -> b {
-  case xs {
-    [] -> acc
-    [h, ..t] -> fold_list(t, fun(acc, h), fun)
+/// @patch_type("gleam/dict.Dict")
+pub type Dict(k, v) =
+  mhashmap.HashMap(k, v)
+
+/// @patch_type("gleam/dict.TransientDict")
+pub type TransientDict(k, v) =
+  Dict(k, v)
+
+/// @patch("gleam/dict.to_transient")
+pub fn to_transient(dict: Dict(k, v)) -> TransientDict(k, v) {
+  dict
+}
+
+/// @patch("gleam/dict.from_transient")
+pub fn from_transient(transient: TransientDict(k, v)) -> Dict(k, v) {
+  transient
+}
+
+/// @patch("gleam/dict.transient_insert")
+pub fn transient_insert(
+  key: k,
+  value: v,
+  transient: TransientDict(k, v),
+) -> TransientDict(k, v) {
+  mhashmap.add(transient, key, value)
+}
+
+/// @patch("gleam/dict.transient_delete")
+pub fn transient_delete(
+  key: k,
+  transient: TransientDict(k, v),
+) -> TransientDict(k, v) {
+  mhashmap.remove(transient, key)
+}
+
+/// @patch("gleam/dict.transient_update_with")
+pub fn transient_update_with(
+  key: k,
+  fun: fn(v) -> v,
+  init: v,
+  transient: TransientDict(k, v),
+) -> TransientDict(k, v) {
+  let next_val = case mhashmap.get(transient, key) {
+    Some(existing) -> fun(existing)
+    None -> init
   }
+  mhashmap.add(transient, key, next_val)
 }
 
 /// @patch("gleam/dict.size")
@@ -52,54 +93,7 @@ pub fn fold(d: Dict(k, v), initial: acc, fun: fn(acc, k, v) -> acc) -> acc {
   mhashmap.fold(d, initial, fun)
 }
 
-/// @patch("gleam/dict.from_list")
-pub fn from_list(entries: List(#(k, v))) -> Dict(k, v) {
-  fold_list(entries, dict.new(), fn(acc, pair) {
-    dict.insert(acc, pair.0, pair.1)
-  })
-}
-
 /// @patch("gleam/dict.do_filter")
 pub fn do_filter(f: fn(k, v) -> Bool, d: Dict(k, v)) -> Dict(k, v) {
   mhashmap.filter(d, f)
-}
-
-/// @patch("gleam/dict.do_take")
-pub fn do_take(desired_keys: List(k), d: Dict(k, v)) -> Dict(k, v) {
-  fold_list(desired_keys, dict.new(), fn(acc, k) {
-    case dict.get(d, k) {
-      Ok(v) -> dict.insert(acc, k, v)
-      Error(_) -> acc
-    }
-  })
-}
-
-/// @patch("gleam/dict.do_drop")
-pub fn do_drop(disallowed_keys: List(k), d: Dict(k, v)) -> Dict(k, v) {
-  fold_list(disallowed_keys, d, dict.delete)
-}
-
-/// @patch("gleam/dict.do_combine")
-pub fn do_combine(
-  combine_fn: fn(k, v, v) -> v,
-  left: Dict(k, v),
-  right: Dict(k, v),
-) -> Dict(k, v) {
-  dict.fold(right, left, fn(acc, k, r_val) {
-    case dict.get(acc, k) {
-      Ok(l_val) -> dict.insert(acc, k, combine_fn(k, l_val, r_val))
-      Error(_) -> dict.insert(acc, k, r_val)
-    }
-  })
-}
-
-/// @patch("gleam/dict.group")
-pub fn group(key: fn(v) -> k, items: List(v)) -> Dict(k, List(v)) {
-  fold_list(items, dict.new(), fn(acc, v) {
-    let k = key(v)
-    case dict.get(acc, k) {
-      Ok(existing) -> dict.insert(acc, k, [v, ..existing])
-      Error(_) -> dict.insert(acc, k, [v])
-    }
-  })
 }
