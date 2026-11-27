@@ -4,46 +4,95 @@
 # targets (wasm, wasm-gc, js, native).
 #
 # Environment overrides:
-#   GEKKO        - gekko CLI command or binary path (default: gekko)
-#   TARGETS      - space-separated MoonBit targets (default: "wasm wasm-gc js native")
-#   UPSTREAM_DIR - optional local checkout of gleam-lang/stdlib
-#   UPSTREAM_REF - git ref to clone when UPSTREAM_DIR is unset (default: v1.2.0)
+#   GEKKO           - gekko CLI command or binary path (default: gekko)
+#   TARGETS         - space-separated MoonBit targets (default: "wasm wasm-gc js native")
+#   UPSTREAM_DIR    - optional local checkout of gleam-lang/stdlib
+#   UPSTREAM_REF    - git ref to clone when UPSTREAM_DIR is unset (default: v1.2.0)
+#   GEKKO_CACHE_DIR - optional persistent cache directory for clones, staging, and MoonBit builds
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 GEKKO="${GEKKO:-gekko}"
 TARGETS="${TARGETS:-wasm wasm-gc js native}"
 UPSTREAM_REF="${UPSTREAM_REF:-v1.2.0}"
+GEKKO_CACHE_DIR="${GEKKO_CACHE_DIR:-}"
 TMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TMP_DIR"' EXIT
 
+LAST_CHANGED=0
+
+write_if_changed() {
+  local dest="$1"
+  local tmp_file
+  tmp_file="$(mktemp "$TMP_DIR/wic.XXXXXX")"
+  cat > "$tmp_file"
+  mkdir -p "$(dirname "$dest")"
+  if [ -f "$dest" ] && cmp -s "$tmp_file" "$dest"; then
+    rm -f "$tmp_file"
+    LAST_CHANGED=0
+  else
+    mv "$tmp_file" "$dest"
+    LAST_CHANGED=1
+  fi
+}
+
+copy_if_changed() {
+  local src="$1"
+  local dest="$2"
+  mkdir -p "$(dirname "$dest")"
+  if [ -f "$dest" ] && cmp -s "$src" "$dest"; then
+    LAST_CHANGED=0
+  else
+    cp "$src" "$dest"
+    LAST_CHANGED=1
+  fi
+}
+
 if [ -n "${UPSTREAM_DIR:-}" ]; then
   UPSTREAM_ROOT="$(cd "$UPSTREAM_DIR" && pwd)"
+elif [ -n "$GEKKO_CACHE_DIR" ]; then
+  UPSTREAM_ROOT="$GEKKO_CACHE_DIR/upstream/stdlib-$UPSTREAM_REF"
+  if [ ! -d "$UPSTREAM_ROOT/.git" ]; then
+    mkdir -p "$(dirname "$UPSTREAM_ROOT")"
+    git clone --depth 1 --branch "$UPSTREAM_REF" https://github.com/gleam-lang/stdlib.git "$TMP_DIR/upstream_stdlib" >/dev/null 2>&1
+    rm -rf "$UPSTREAM_ROOT"
+    mv "$TMP_DIR/upstream_stdlib" "$UPSTREAM_ROOT"
+  fi
 else
   UPSTREAM_ROOT="$TMP_DIR/upstream_stdlib"
   git clone --depth 1 --branch "$UPSTREAM_REF" https://github.com/gleam-lang/stdlib.git "$UPSTREAM_ROOT" >/dev/null 2>&1
 fi
 
-PROJECT_DIR="$TMP_DIR/stdlib_parity"
-OUT_DIR="$TMP_DIR/stdlib_parity_mbt"
+if [ -n "$GEKKO_CACHE_DIR" ]; then
+  PROJECT_DIR="$GEKKO_CACHE_DIR/stdlib_parity/project"
+  OUT_DIR="$GEKKO_CACHE_DIR/stdlib_parity/out"
+else
+  PROJECT_DIR="$TMP_DIR/stdlib_parity"
+  OUT_DIR="$TMP_DIR/stdlib_parity_mbt"
+fi
 mkdir -p "$PROJECT_DIR/src" "$PROJECT_DIR/test" "$PROJECT_DIR/moonbit/decode_test_ffi"
 
-cat > "$PROJECT_DIR/gleam.toml" <<EOF
+GLEAM_TOML_CHANGED=0
+write_if_changed "$PROJECT_DIR/gleam.toml" <<EOF
 name = "stdlib_parity"
 version = "0.1.0"
 
 [dependencies]
 gleam_stdlib = ">= 1.0.0 and < 2.0.0"
 gekko_stdlib = { path = "$ROOT" }
-EOF
 
-cat > "$PROJECT_DIR/src/stdlib_parity.gleam" <<'EOF'
+[tools.gekko.use_shims]
+gleam_stdlib = "gekko_stdlib"
+EOF
+GLEAM_TOML_CHANGED=$LAST_CHANGED
+
+write_if_changed "$PROJECT_DIR/src/stdlib_parity.gleam" <<'EOF'
 pub fn main() -> Nil {
   Nil
 }
 EOF
 
-cat > "$PROJECT_DIR/test/stdlib_parity_test.gleam" <<'EOF'
+write_if_changed "$PROJECT_DIR/test/stdlib_parity_test.gleam" <<'EOF'
 pub fn main() -> Nil {
   Nil
 }
@@ -68,7 +117,7 @@ verbatim_modules=(
   uri_test.gleam
 )
 for file in "${verbatim_modules[@]}"; do
-  cp "$UPSTREAM_ROOT/test/gleam/$file" "$PROJECT_DIR/test/$file"
+  copy_if_changed "$UPSTREAM_ROOT/test/gleam/$file" "$PROJECT_DIR/test/$file"
 done
 
 # int_test.gleam: skip the single `bitwise_shift_edge_cases_test` function
@@ -92,7 +141,7 @@ awk '
       exit 1
     }
   }
-' "$UPSTREAM_ROOT/test/gleam/int_test.gleam" > "$PROJECT_DIR/test/int_test.gleam"
+' "$UPSTREAM_ROOT/test/gleam/int_test.gleam" | write_if_changed "$PROJECT_DIR/test/int_test.gleam"
 
 # string_test.gleam: skip the `@target(erlang)` BEAM inspect tests (which bind
 # Erlang `self()` / `make_ref()` and test Erlang PIDs/references/improper lists).
@@ -135,13 +184,13 @@ awk '
       exit 1
     }
   }
-' "$UPSTREAM_ROOT/test/gleam/string_test.gleam" > "$PROJECT_DIR/test/string_test.gleam"
+' "$UPSTREAM_ROOT/test/gleam/string_test.gleam" | write_if_changed "$PROJECT_DIR/test/string_test.gleam"
 
 # dynamic/decode_test.gleam: copied verbatim alongside a pure-Gleam test-only
 # @patch override for its Erlang/JS `make_object` / `make_map` test helpers.
-cp "$UPSTREAM_ROOT/test/gleam/dynamic/decode_test.gleam" "$PROJECT_DIR/test/decode_test.gleam"
+copy_if_changed "$UPSTREAM_ROOT/test/gleam/dynamic/decode_test.gleam" "$PROJECT_DIR/test/decode_test.gleam"
 
-cat > "$PROJECT_DIR/src/decode_test_shim.gleam" <<'EOF'
+write_if_changed "$PROJECT_DIR/src/decode_test_shim.gleam" <<'EOF'
 import gekko_stdlib/ffi/prelude as mgp
 import gleam/dynamic.{type Dynamic}
 import gleam/list
@@ -155,15 +204,14 @@ pub fn make_map(items: List(#(String, a))) -> Dynamic {
 }
 EOF
 
-cat >> "$PROJECT_DIR/gleam.toml" <<'EOF'
-
-[tools.gekko.use_shims]
-gleam_stdlib = "gekko_stdlib"
-EOF
-
 echo "=== Staging dependencies and transpiling stdlib_parity ==="
-(cd "$PROJECT_DIR" && gleam deps download)
-if ! gekko_out="$("$GEKKO" check --root "$PROJECT_DIR" --out "$OUT_DIR" --target wasm 2>&1)"; then
+if [ ! -d "$PROJECT_DIR/build/packages/gleam_stdlib" ] || [ "$GLEAM_TOML_CHANGED" -eq 1 ]; then
+  rm -f "$PROJECT_DIR/manifest.toml"
+  (cd "$PROJECT_DIR" && gleam deps download)
+fi
+
+FIRST_TARGET="${TARGETS%% *}"
+if ! gekko_out="$("$GEKKO" check --root "$PROJECT_DIR" --out "$OUT_DIR" --target "$FIRST_TARGET" 2>&1)"; then
   echo "$gekko_out" >&2
   exit 1
 fi
@@ -175,8 +223,7 @@ fi
 
 for target in $TARGETS; do
   echo "=== Running stdlib_parity tests on $target ==="
-  (cd "$OUT_DIR" && moon check --deny-warn --target "$target")
-  if ! out="$(cd "$OUT_DIR" && moon test --target "$target" 2>&1)"; then
+  if ! out="$(cd "$OUT_DIR" && moon test --deny-warn --target "$target" 2>&1)"; then
     echo "$out" >&2
     exit 1
   fi
