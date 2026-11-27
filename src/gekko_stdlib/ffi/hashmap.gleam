@@ -5,18 +5,15 @@ import gleam/option.{type Option}
 /// @external_type(moonbit, "moonbitlang/core/immut/hashmap", "HashMap")
 pub type HashMap(k, v)
 
-/// @external(moonbit, "stdlib_hashmap_adapter", "add")
-pub fn add(self: HashMap(k, v), arg1: k, arg2: v) -> HashMap(k, v) {
-  let _ = self
-  let _ = arg1
-  let _ = arg2
-  panic as "Implemented in MoonBit"
-}
-
 /// @external(moonbit, "stdlib_hashmap_adapter", "contains")
 pub fn contains(self: HashMap(k, v), arg1: k) -> Bool {
   let _ = self
   let _ = arg1
+  panic as "Implemented in MoonBit"
+}
+
+/// @external(moonbit, "stdlib_hashmap_adapter", "empty")
+pub fn empty() -> HashMap(k, v) {
   panic as "Implemented in MoonBit"
 }
 
@@ -42,6 +39,14 @@ pub fn get(self: HashMap(k, v), arg1: k) -> Option(v) {
   panic as "Implemented in MoonBit"
 }
 
+/// @external(moonbit, "stdlib_hashmap_adapter", "insert")
+pub fn insert(self: HashMap(k, v), arg1: k, arg2: v) -> HashMap(k, v) {
+  let _ = self
+  let _ = arg1
+  let _ = arg2
+  panic as "Implemented in MoonBit"
+}
+
 /// @external(moonbit, "stdlib_hashmap_adapter", "length")
 pub fn length(self: HashMap(k, v)) -> Int {
   let _ = self
@@ -52,11 +57,6 @@ pub fn length(self: HashMap(k, v)) -> Int {
 pub fn map(self: HashMap(k, v), arg1: fn(k, v) -> a) -> HashMap(k, a) {
   let _ = self
   let _ = arg1
-  panic as "Implemented in MoonBit"
-}
-
-/// @external(moonbit, "stdlib_hashmap_adapter", "new")
-pub fn new() -> HashMap(k, v) {
   panic as "Implemented in MoonBit"
 }
 

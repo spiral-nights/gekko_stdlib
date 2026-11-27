@@ -25,7 +25,7 @@ pub fn transient_insert(
   value: v,
   transient: TransientDict(k, v),
 ) -> TransientDict(k, v) {
-  mhashmap.add(transient, key, value)
+  mhashmap.insert(transient, key, value)
 }
 
 /// @patch("gleam/dict.transient_delete")
@@ -47,7 +47,7 @@ pub fn transient_update_with(
     Some(existing) -> fun(existing)
     None -> init
   }
-  mhashmap.add(transient, key, next_val)
+  mhashmap.insert(transient, key, next_val)
 }
 
 /// @patch("gleam/dict.size")
@@ -62,7 +62,7 @@ pub fn has_key(d: Dict(k, v), key: k) -> Bool {
 
 /// @patch("gleam/dict.new")
 pub fn new() -> Dict(k, v) {
-  mhashmap.new()
+  mhashmap.empty()
 }
 
 /// @patch("gleam/dict.get")
@@ -75,7 +75,7 @@ pub fn get(from: Dict(k, v), key: k) -> Result(v, Nil) {
 
 /// @patch("gleam/dict.do_insert")
 pub fn do_insert(key: k, value: v, d: Dict(k, v)) -> Dict(k, v) {
-  mhashmap.add(d, key, value)
+  mhashmap.insert(d, key, value)
 }
 
 /// @patch("gleam/dict.delete")
