@@ -137,31 +137,21 @@ awk '
   }
 ' "$UPSTREAM_ROOT/test/gleam/string_test.gleam" > "$PROJECT_DIR/test/string_test.gleam"
 
-# dynamic/decode_test.gleam: copied verbatim alongside a tiny test-only MoonBit
-# FFI override for its Erlang/JS `make_object` / `make_map` test helpers.
+# dynamic/decode_test.gleam: copied verbatim alongside a pure-Gleam test-only
+# @patch override for its Erlang/JS `make_object` / `make_map` test helpers.
 cp "$UPSTREAM_ROOT/test/gleam/dynamic/decode_test.gleam" "$PROJECT_DIR/test/decode_test.gleam"
 
-cat > "$PROJECT_DIR/moonbit/decode_test_ffi/moon.pkg" <<'EOF'
-import {
-  "stdlib_parity/gprelude" @gprelude,
-}
-EOF
+cat > "$PROJECT_DIR/src/decode_test_shim.gleam" <<'EOF'
+import gekko_stdlib/ffi/prelude as mgp
+import gleam/dynamic.{type Dynamic}
+import gleam/list
 
-cat > "$PROJECT_DIR/moonbit/decode_test_ffi/decode_test_ffi.mbt" <<'EOF'
-///|
-pub fn[T : @gprelude.ToDynamic] make_map(
-  items : @gprelude.GList[(String, T)],
-) -> @gprelude.Dynamic {
-  let m : Map[@gprelude.Dynamic, @gprelude.Dynamic] = Default::default()
-  for cur = items {
-    match cur {
-      @gprelude.Nil => break @gprelude.DynMap(m)
-      @gprelude.Cons((k, v), rest) => {
-        m.set(@gprelude.DynString(k), @gprelude.ToDynamic::to_dynamic(v))
-        continue rest
-      }
-    }
-  }
+/// @patch("test/decode_test.make_object")
+/// @patch("test/decode_test.make_map")
+pub fn make_map(items: List(#(String, a))) -> Dynamic {
+  items
+  |> list.map(fn(p) { #(dynamic.string(p.0), mgp.to_dynamic(p.1)) })
+  |> dynamic.properties
 }
 EOF
 
@@ -169,31 +159,6 @@ cat >> "$PROJECT_DIR/gleam.toml" <<'EOF'
 
 [tools.gekko.use_shims]
 gleam_stdlib = "gekko_stdlib"
-
-[tools.gekko.patches."test/decode_test"]
-imports = [
-  "decode_test_ffi",
-]
-EOF
-
-mkdir -p "$PROJECT_DIR/patches/test/decode_test"
-
-cat > "$PROJECT_DIR/patches/test/decode_test/decode_test.mbt" <<'EOF'
-///|
-#gekko.patch
-fn[T : @gprelude.ToDynamic] make_object(
-  items : @gprelude.GList[(String, T)],
-) -> @gprelude.Dynamic {
-  @decode_test_ffi.make_map(items)
-}
-
-///|
-#gekko.patch
-fn[T : @gprelude.ToDynamic] make_map(
-  items : @gprelude.GList[(String, T)],
-) -> @gprelude.Dynamic {
-  @decode_test_ffi.make_map(items)
-}
 EOF
 
 echo "=== Staging dependencies and transpiling stdlib_parity ==="

@@ -1,0 +1,3 @@
+import {
+  "moonbitlang/core/immut/hashmap" @moonbitlang_core_immut_hashmap,
+}

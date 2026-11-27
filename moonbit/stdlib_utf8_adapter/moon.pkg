@@ -1,0 +1,4 @@
+import {
+  "gekko_stdlib_mbt/gprelude" @gprelude,
+  "moonbitlang/core/encoding/utf8" @moonbitlang_core_encoding_utf8,
+}

@@ -1,0 +1,3 @@
+import {
+  "gekko_stdlib_mbt/gprelude" @gprelude,
+}

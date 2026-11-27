@@ -1,0 +1,3 @@
+import {
+  "moonbitlang/core/string" @moonbitlang_core_string,
+}
