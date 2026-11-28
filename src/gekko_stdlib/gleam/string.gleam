@@ -11,7 +11,7 @@ const gleam_whitespace =
 
 /// @patch("gleam/string.length")
 pub fn length(s: String) -> Int {
-  list.length(graphemes.split(s))
+  graphemes.count(s)
 }
 
 /// @patch("gleam/string.lowercase")

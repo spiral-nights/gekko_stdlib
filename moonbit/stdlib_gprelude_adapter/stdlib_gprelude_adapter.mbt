@@ -9,7 +9,7 @@ pub fn bit_array_read_int(arg0 : @gprelude.BitArray, arg1 : Int64, arg2 : Int64,
 }
 
 ///|
-pub fn[T : @gprelude.GleamInspect] gleam_inspect(x : T) -> String {
+pub fn[T : @gprelude.GleamInspect] gleam_inspect(x : T) -> StringView {
   @gprelude.gleam_inspect(x)
 }
 
@@ -34,7 +34,7 @@ pub fn concat(arg0 : @gprelude.GList[@gprelude.BitArray]) -> @gprelude.BitArray 
 }
 
 ///|
-pub fn from_string(arg0 : String) -> @gprelude.BitArray {
+pub fn from_string(arg0 : StringView) -> @gprelude.BitArray {
   @gprelude.BitArray::from_string(arg0)
 }
 
@@ -64,7 +64,7 @@ pub fn dynamic_dyn_float(arg0 : Double) -> @gprelude.Dynamic {
 }
 
 ///|
-pub fn dynamic_dyn_string(arg0 : String) -> @gprelude.Dynamic {
+pub fn dynamic_dyn_string(arg0 : StringView) -> @gprelude.Dynamic {
   @gprelude.DynString(arg0)
 }
 
@@ -89,7 +89,7 @@ pub fn dynamic_dyn_map(arg0 : Map[@gprelude.Dynamic, @gprelude.Dynamic]) -> @gpr
 }
 
 ///|
-pub fn[Ret] match_dynamic(value : @gprelude.Dynamic, on_dyn_null : () -> Ret, on_dyn_bool : (Bool) -> Ret, on_dyn_int : (Int64) -> Ret, on_dyn_float : (Double) -> Ret, on_dyn_string : (String) -> Ret, on_dyn_bit_array : (@gprelude.BitArray) -> Ret, on_dyn_list : (@gprelude.GList[@gprelude.Dynamic]) -> Ret, on_dyn_array : (@gprelude.GList[@gprelude.Dynamic]) -> Ret, on_dyn_map : (Map[@gprelude.Dynamic, @gprelude.Dynamic]) -> Ret) -> Ret {
+pub fn[Ret] match_dynamic(value : @gprelude.Dynamic, on_dyn_null : () -> Ret, on_dyn_bool : (Bool) -> Ret, on_dyn_int : (Int64) -> Ret, on_dyn_float : (Double) -> Ret, on_dyn_string : (StringView) -> Ret, on_dyn_bit_array : (@gprelude.BitArray) -> Ret, on_dyn_list : (@gprelude.GList[@gprelude.Dynamic]) -> Ret, on_dyn_array : (@gprelude.GList[@gprelude.Dynamic]) -> Ret, on_dyn_map : (Map[@gprelude.Dynamic, @gprelude.Dynamic]) -> Ret) -> Ret {
   match value {
     @gprelude.DynNull => on_dyn_null()
     @gprelude.DynBool(v0) => on_dyn_bool(v0)

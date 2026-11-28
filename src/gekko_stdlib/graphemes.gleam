@@ -1,5 +1,4 @@
 import gekko_stdlib/ffi/builtin as mbuiltin
-import gleam/option.{None}
 
 fn is_gcb_hangul_l(cp: Int) -> Bool {
   { cp >= 0x1100 && cp <= 0x115F } || { cp >= 0xA960 && cp <= 0xA97C }
@@ -165,20 +164,35 @@ fn is_gcb_ext_pict(cp: Int) -> Bool {
   }
 }
 
-fn take_cluster_rest(
-  chars: List(UtfCodepoint),
-  buf: mbuiltin.StringBuilder,
+fn decode_codepoint_at(s: String, idx: Int, len: Int) -> #(Int, Int) {
+  let u0 = mbuiltin.string_at(s, idx)
+  case u0 >= 0xD800 && u0 <= 0xDBFF && idx + 1 < len {
+    True -> {
+      let u1 = mbuiltin.string_at(s, idx + 1)
+      case u1 >= 0xDC00 && u1 <= 0xDFFF {
+        True -> #(0x10000 + { u0 - 0xD800 } * 1024 + { u1 - 0xDC00 }, idx + 2)
+        False -> #(u0, idx + 1)
+      }
+    }
+    False -> #(u0, idx + 1)
+  }
+}
+
+fn scan_cluster_rest(
+  s: String,
+  idx: Int,
+  len: Int,
   prev: Int,
   ri_odd: Bool,
   ext_pict_zwj: Bool,
   saw_zwj: Bool,
-) -> #(String, List(UtfCodepoint)) {
-  case chars {
-    [] -> #(mbuiltin.string_builder_to_string(buf), [])
-    [ch, ..rest] -> {
-      let cur = mbuiltin.char_to_int(ch)
+) -> Int {
+  case idx >= len {
+    True -> len
+    False -> {
+      let #(cur, next_idx) = decode_codepoint_at(s, idx, len)
       case cur == 0x0D || cur == 0x0A || is_gcb_control(cur) {
-        True -> #(mbuiltin.string_builder_to_string(buf), chars)
+        True -> idx
         False -> {
           let is_hangul =
             {
@@ -199,94 +213,91 @@ fn take_cluster_rest(
               && is_gcb_hangul_t(cur)
             }
           case is_hangul {
-            True -> {
-              mbuiltin.write_char(buf, ch)
-              take_cluster_rest(rest, buf, cur, ri_odd, ext_pict_zwj, saw_zwj)
-            }
+            True ->
+              scan_cluster_rest(
+                s,
+                next_idx,
+                len,
+                cur,
+                ri_odd,
+                ext_pict_zwj,
+                saw_zwj,
+              )
             False ->
               case is_gcb_extend(cur) {
-                True -> {
-                  mbuiltin.write_char(buf, ch)
-                  take_cluster_rest(
-                    rest,
-                    buf,
+                True ->
+                  scan_cluster_rest(
+                    s,
+                    next_idx,
+                    len,
                     cur,
                     ri_odd,
                     ext_pict_zwj,
                     saw_zwj,
                   )
-                }
                 False ->
                   case cur == 0x200D {
-                    True -> {
-                      mbuiltin.write_char(buf, ch)
-                      take_cluster_rest(
-                        rest,
-                        buf,
+                    True ->
+                      scan_cluster_rest(
+                        s,
+                        next_idx,
+                        len,
                         cur,
                         ri_odd,
                         ext_pict_zwj,
                         True,
                       )
-                    }
                     False ->
                       case is_gcb_spacing_mark(cur) {
-                        True -> {
-                          mbuiltin.write_char(buf, ch)
-                          take_cluster_rest(
-                            rest,
-                            buf,
+                        True ->
+                          scan_cluster_rest(
+                            s,
+                            next_idx,
+                            len,
                             cur,
                             ri_odd,
                             False,
                             False,
                           )
-                        }
                         False ->
                           case is_gcb_prepend(prev) {
-                            True -> {
-                              mbuiltin.write_char(buf, ch)
-                              take_cluster_rest(
-                                rest,
-                                buf,
+                            True ->
+                              scan_cluster_rest(
+                                s,
+                                next_idx,
+                                len,
                                 cur,
                                 is_gcb_ri(cur),
                                 is_gcb_ext_pict(cur),
                                 False,
                               )
-                            }
                             False ->
                               case
                                 ext_pict_zwj && saw_zwj && is_gcb_ext_pict(cur)
                               {
-                                True -> {
-                                  mbuiltin.write_char(buf, ch)
-                                  take_cluster_rest(
-                                    rest,
-                                    buf,
+                                True ->
+                                  scan_cluster_rest(
+                                    s,
+                                    next_idx,
+                                    len,
                                     cur,
                                     ri_odd,
                                     ext_pict_zwj,
                                     False,
                                   )
-                                }
                                 False ->
                                   case is_gcb_ri(cur) && ri_odd {
-                                    True -> {
-                                      mbuiltin.write_char(buf, ch)
-                                      take_cluster_rest(
-                                        rest,
-                                        buf,
+                                    True ->
+                                      scan_cluster_rest(
+                                        s,
+                                        next_idx,
+                                        len,
                                         cur,
                                         False,
                                         ext_pict_zwj,
                                         saw_zwj,
                                       )
-                                    }
-                                    False -> #(
-                                      mbuiltin.string_builder_to_string(buf),
-                                      chars,
-                                    )
+                                    False -> idx
                                   }
                               }
                           }
@@ -300,36 +311,35 @@ fn take_cluster_rest(
   }
 }
 
-fn pop_cluster_chars(
-  chars: List(UtfCodepoint),
-) -> Result(#(String, List(UtfCodepoint)), Nil) {
-  case chars {
-    [] -> Error(Nil)
-    [c0, ..rest] -> {
-      let cp0 = mbuiltin.char_to_int(c0)
-      let buf = mbuiltin.new_string_builder(None)
-      mbuiltin.write_char(buf, c0)
-      case rest {
-        [] -> Ok(#(mbuiltin.string_builder_to_string(buf), []))
-        [c1, ..rest1] -> {
-          let cp1 = mbuiltin.char_to_int(c1)
+fn next_cluster_end(s: String, start: Int, len: Int) -> Int {
+  let u0 = mbuiltin.string_at(s, start)
+  case
+    u0 < 0x80
+    && u0 != 0x0D
+    && { start + 1 >= len || mbuiltin.string_at(s, start + 1) < 0x80 }
+  {
+    True -> start + 1
+    False -> {
+      let #(cp0, idx1) = decode_codepoint_at(s, start, len)
+      case idx1 >= len {
+        True -> len
+        False -> {
+          let #(cp1, idx2) = decode_codepoint_at(s, idx1, len)
           case cp0 == 0x0D && cp1 == 0x0A {
-            True -> {
-              mbuiltin.write_char(buf, c1)
-              Ok(#(mbuiltin.string_builder_to_string(buf), rest1))
-            }
+            True -> idx2
             False ->
               case cp0 == 0x0D || cp0 == 0x0A || is_gcb_control(cp0) {
-                True -> Ok(#(mbuiltin.string_builder_to_string(buf), rest))
+                True -> idx1
                 False ->
-                  Ok(take_cluster_rest(
-                    rest,
-                    buf,
+                  scan_cluster_rest(
+                    s,
+                    idx1,
+                    len,
                     cp0,
                     is_gcb_ri(cp0),
                     is_gcb_ext_pict(cp0),
                     cp0 == 0x200D,
-                  ))
+                  )
               }
           }
         }
@@ -345,23 +355,49 @@ fn reverse_loop(xs: List(a), acc: List(a)) -> List(a) {
   }
 }
 
-fn split_chars_loop(
-  chars: List(UtfCodepoint),
+fn split_index_loop(
+  s: String,
+  idx: Int,
+  len: Int,
   acc: List(String),
 ) -> List(String) {
-  case pop_cluster_chars(chars) {
-    Error(_) -> reverse_loop(acc, [])
-    Ok(#(cluster, rest)) -> split_chars_loop(rest, [cluster, ..acc])
+  case idx >= len {
+    True -> reverse_loop(acc, [])
+    False -> {
+      let end = next_cluster_end(s, idx, len)
+      let cluster = mbuiltin.unsafe_substring(s, idx, end)
+      split_index_loop(s, end, len, [cluster, ..acc])
+    }
+  }
+}
+
+fn count_index_loop(s: String, idx: Int, len: Int, acc: Int) -> Int {
+  case idx >= len {
+    True -> acc
+    False -> count_index_loop(s, next_cluster_end(s, idx, len), len, acc + 1)
   }
 }
 
 pub fn split(s: String) -> List(String) {
-  split_chars_loop(mbuiltin.string_to_array(s), [])
+  let len = mbuiltin.string_length(s)
+  split_index_loop(s, 0, len, [])
+}
+
+pub fn count(s: String) -> Int {
+  let len = mbuiltin.string_length(s)
+  count_index_loop(s, 0, len, 0)
 }
 
 pub fn pop(s: String) -> Result(#(String, String), Nil) {
-  case pop_cluster_chars(mbuiltin.string_to_array(s)) {
-    Error(_) -> Error(Nil)
-    Ok(#(first, rest)) -> Ok(#(first, mbuiltin.string_from_array(rest)))
+  let len = mbuiltin.string_length(s)
+  case len == 0 {
+    True -> Error(Nil)
+    False -> {
+      let end = next_cluster_end(s, 0, len)
+      Ok(#(
+        mbuiltin.unsafe_substring(s, 0, end),
+        mbuiltin.unsafe_substring(s, end, len),
+      ))
+    }
   }
 }
